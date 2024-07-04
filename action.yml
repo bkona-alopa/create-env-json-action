@@ -8,7 +8,7 @@ outputs:
   full-path:
     description: 'The full path to the written file'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'index.js'
 branding:
   icon: 'book-open'  
