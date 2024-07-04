@@ -4,6 +4,9 @@ inputs:
   file-name:
     description: 'The name of the file to be written'
     required: true
+  custom-inputs:
+    description: 'pass the key value pairs in this format key=value'
+    required: true
 outputs:
   full-path:
     description: 'The full path to the written file'
