@@ -1,26 +1,27 @@
 const core = require('@actions/core');
 const fs = require('fs');
 
-const fileName = core.getInput('file-name');
-const inputPrefix = "INPUT_"; // This is the prefix used by GitHub Actions
-const path = require("path");
-const fullPath = path.join(process.env.GITHUB_WORKSPACE, fileName);
+try {
+  const fileName = core.getInput('file-name');
+  const customInputs = core.getInput('custom-inputs');
 
-var obj = {};
-
-Object.keys(process.env).forEach(function(key) {
-  if(key.startsWith(inputPrefix) && key != "INPUT_FILE-NAME") {
-    obj[key.substring(inputPrefix.length)] = process.env[key];
-  }
-});
+  // Parse customInputs string into key-value pairs
+  const inputsArray = customInputs.split('\n').filter(input => input.trim() !== '');
+  const obj = {};
   
-const fileContent = JSON.stringify(obj);
+  inputsArray.forEach(input => {
+    const [key, value] = input.split('=');
+    obj[key.trim()] = value.trim();
+  });
 
-fs.writeFile(fullPath, fileContent, function (error) {
-  if (error) {
-    core.setFailed(error.message);
-  }
-  
+  const fullPath = `${process.env.GITHUB_WORKSPACE}/${fileName}`;
+
+  const fileContent = JSON.stringify(obj);
+
+  fs.writeFileSync(fullPath, fileContent);
+
   console.log(`Successfully written file ${fullPath} with content ${fileContent}`);
   core.setOutput("full-path", fullPath);
-});
+} catch (error) {
+  core.setFailed(error.message);
+}
